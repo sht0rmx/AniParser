@@ -1,0 +1,4 @@
+aiogram==3.22.0
+pocketbase==0.15.0
+rich==14.1.0
+python-decouple==3.8
