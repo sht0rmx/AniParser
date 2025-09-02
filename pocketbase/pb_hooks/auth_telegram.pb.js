@@ -91,15 +91,17 @@ routerAdd("POST", "/api/auth/telegram", (c) => {
 
     console.log(tgId, username);
     try {
-      const result2 = {};
+      let userRecord = new DynamicModel({
+        id: "",
+      });
       $app
         .db()
         .select("id")
         .from("users")
         .andWhere($dbx.like("telegram_id", tgId))
-        .row(result2);
+        .one(userRecord)
 
-      record = $app.findRecordById("users", result2.id);
+      record = $app.findRecordById("users", userRecord.id);
     } catch (e) {
       if (e.message.includes("no rows in result set")) {
         const usersColl = $app.findCollectionByNameOrId("users");
