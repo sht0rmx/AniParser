@@ -2,34 +2,20 @@ import 'remixicon/fonts/remixicon.css'
 import '@/assets/main.css'
 
 import { createApp } from 'vue'
-import { init, backButton, LaunchParamsRetrieveError } from '@telegram-apps/sdk'
 import App from './App.vue'
 import router from './router'
 
-export let isTgEnv = false
+export let isTgEnv = !!window.Telegram?.WebApp.initData
+export let TgApp
 
-try {
-  init();
-  isTgEnv = true
-} catch (err) {
-  if (err instanceof LaunchParamsRetrieveError) {
-    isTgEnv = false
-    console.warn('Not running inside Telegram. Redirecting to /need_auth')
-    router.push('/need_auth')
-  } else {
-    throw err
-  }
-}
+if (isTgEnv) {
+  TgApp = window.Telegram.WebApp;
+  const BackButton = TgApp.BackButton;
 
-if (backButton.mount.isAvailable()) {
-  backButton.mount()
-  if (backButton.show.isAvailable()) {
-    backButton.show()
-  }
-  const off = backButton.onClick(() => {
-    off()
-    window.history.back()
-  })
+  BackButton.show();
+  BackButton.onClick(() => {
+    window.history.back();
+  });
 }
 
 const app = createApp(App)

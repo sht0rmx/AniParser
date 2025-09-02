@@ -49,7 +49,6 @@
 import { ref } from 'vue';
 import pb from '@/pocketbase';
 
-
 const buttonClass = ref('badge badge-outline badge-info');
 const status = ref('Loading...');
 const status_auth = ref('...')

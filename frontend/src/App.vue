@@ -16,35 +16,28 @@
 
 <script setup>
 import BottomDock from '@/components/BottomDock.vue'
-import pb from '@/pocketbase';
-import { onMounted, ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { onMounted } from 'vue'
+import { TgApp, isTgEnv } from './main'
+import pb from '@/pocketbase'
 
-const router = useRouter();
-const initData = ref(null);
+onMounted(async () => {
+  if (isTgEnv && TgApp) {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_POCKETBASE_URL}/api/auth/telegram`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ initData: TgApp.initData })
+      })
+      if (!res.ok) throw new Error('Auth request failed')
+      const data = await res.json()
 
-async function authWithTelegram() {
-  if (!initData.value) {
-    console.error('No initData available');
-    return;
-  }
-  try {
-    const res = await pb.collection('users').authWithTelegram(initData.value);
-    console.log('Auth successful:', res);
-  } catch (err) {
-    console.error('Auth failed:', err);
-    router.push('/need_auth');
-  }
-}
-
-onMounted(() => {
-  if (window.Telegram && window.Telegram.WebApp) {
-    initData.value = window.Telegram.WebApp.initData;
-    console.log('Telegram WebApp is ready!');
-    authWithTelegram();
+      pb.authStore.save(data.token, data.record)
+      console.log('PB auth success:', pb.authStore.isValid)
+    } catch (err) {
+      console.error('PB auth failed:', err)
+    }
   } else {
-    console.error('window.Telegram.WebApp is not available.');
-    router.push('/need_auth');
+    console.warn('Not inside Telegram WebApp')
   }
-});
+})
 </script>
