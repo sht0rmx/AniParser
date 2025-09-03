@@ -114,7 +114,7 @@ onMounted(() => loadTitles());
   </ul>
 
   <!-- Pagination -->
-  <div class="mt-6 flex items-center justify-center gap-4">
+  <div class="mt-6 flex items-center justify-center gap-4 mb-3">
     <button v-if="!searchQuery" class="btn btn-ghost btn-sm" :disabled="page <= 1" @click="loadTitles(page - 1)">
       <i class="ri-arrow-left-line text-xl"></i>
     </button>
