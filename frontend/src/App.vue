@@ -1,5 +1,5 @@
 <template>
-  <div :class="['flex flex-col min-h-screen', { 'pb-14': $route.path !== '/need_auth' }]">
+  <div :class="['flex flex-col min-h-screen bg-base-200', { 'pb-14': $route.path !== '/need_auth' }]">
     
     <main :class="['flex-1 text-sm text-base-content flex justify-center', { 'p-4': $route.path !== '/need_auth' }]">
       <div :class="[

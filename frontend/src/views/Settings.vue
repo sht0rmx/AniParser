@@ -39,9 +39,11 @@
         </ul>
     </div>
     <div class="text-center items-center text-sm text-gray-400 mt-5 space-y-2">
-        Made with ❤️ <div class="badge-sm" :class="buttonClass" @click="fetchStatus();">{{ status }}</div>
-        <br/>
-        <div class="badge badge-sm badge-soft badge-info" @click="checkAuth();">{{ status_auth }}</div>
+        made with ❤️        
+    </div>
+    <div class="text-center items-center text-sm text-gray-400 mt-2 space-x-2">
+        <div class="badge badge-sm" :class="badgeDb" @click="fetchStatus();">{{ status }}</div>
+        <div class="badge badge-sm" :class="badgeAuth" @click="checkAuth();">{{ status_auth }}</div>       
     </div>
 </template>
 
@@ -49,17 +51,23 @@
 import { ref } from 'vue';
 import pb from '@/pocketbase';
 
-const buttonClass = ref('badge badge-outline badge-info');
+const badgeDb = ref('badge-outline badge-info');
+const badgeAuth = ref('badge-outline badge-info');
 const status = ref('Loading...');
 const status_auth = ref('...')
 
 async function checkAuth() {
-    const result = pb.authStore.isValid
-    if (result) {
-        status_auth.value = "Auth: Ok"
-    }
-    else {
-        status_auth.value = "Auth: Error"
+    const ok = pb.authStore.isValid
+
+    if (ok) {
+        const user = pb.authStore.record
+        const uname = user?.username || user?.email || "unknown"
+        
+        badgeAuth.value = "badge-success"
+        status_auth.value = `auth as @${uname}`
+    } else {
+        badgeAuth.value = "badge-error"
+        status_auth.value = "auth error"
     }
 }
 
@@ -67,17 +75,17 @@ async function fetchStatus() {
   try {
     const result = await pb.health.check();
     if (result.code != 200) {
-      buttonClass.value = 'badge badge-error';
-      status.value = 'API Unavailable';
+      badgeDb.value = 'badge badge-error';
+      status.value = 'api unavailable';
     } 
     else {
-      buttonClass.value = 'badge badge-success';
-      status.value = result.message;
+      badgeDb.value = 'badge badge-success';
+      status.value = "api is healthy"
     }
   } catch (error) {
-    console.error('Failed to fetch PocketBase status:', error);
-    buttonClass.value = 'badge badge-warning';
-    status.value = 'DB Unavailable';
+    console.error('Failed to fetch db status:', error);
+    badgeDb.value = "badge-warning"
+    status.value = 'db unavailable';
   }
 }
 

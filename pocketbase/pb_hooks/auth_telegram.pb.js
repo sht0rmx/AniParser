@@ -83,13 +83,13 @@ routerAdd("POST", "/api/auth/telegram", (c) => {
   }
 
   let record;
+  let user;
   try {
-    const user =
+    user =
       typeof params.user === "string" ? JSON.parse(params.user) : params.user;
     const tgId = user["id"];
     const username = user["username"];
 
-    console.log(tgId, username);
     try {
       let userRecord = new DynamicModel({
         id: "",
@@ -135,7 +135,7 @@ routerAdd("POST", "/api/auth/telegram", (c) => {
 
   try {
     const token = record.newAuthToken();
-    console.log("Authorised");
+    console.log("Authorised uid:",user["id"],"authdate:",params.auth_date);
     return c.json(200, { token, record });
   } catch (err) {
     console.error("Token gen error:", err);
